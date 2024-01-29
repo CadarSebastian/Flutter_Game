@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'GamePage.dart'; // Import the new game page file
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -30,8 +31,10 @@ class _HomePageState extends State<HomePage> {
           alignment: Alignment.center,
           child: ElevatedButton(
             onPressed: () {
-              // Add your logic to start the game
-              print('Game started!');
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => GamePage())
+              );
             },
             style: ElevatedButton.styleFrom(
               shape: const CircleBorder(),
