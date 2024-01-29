@@ -30,7 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_sequence_animation: ^2.0.0
+  
 
 
     
@@ -56,6 +56,9 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  assets:
+    - assets/caracter.png
+
   
 
   # The following line ensures that the Material Icons font is

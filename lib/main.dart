@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'GamePage.dart'; // Import the new game page file
 import 'HomePage.dart';
 
 void main (){
