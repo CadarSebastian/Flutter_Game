@@ -22,15 +22,16 @@ class _GamePageState extends State<GamePage> {
   @override
   void initState() {
     super.initState();
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(milliseconds: 700), (timer) {
       setState(() {
         _number += 5;
+        
         
         circles.add(Circle());
       });
     });
 
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         screenWidth = MediaQuery.of(context).size.width;
         screenHeight = MediaQuery.of(context).size.height;
@@ -170,7 +171,7 @@ class _GamePageState extends State<GamePage> {
                         child: const Icon(Icons.arrow_back),
                       ),
                     ),
-                    const SizedBox(width: 16.0),
+                    const SizedBox(width: 1110.0),
                     
                     Listener(
                       onPointerDown: (details) {
