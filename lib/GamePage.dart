@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:async'; 
+import 'dart:async';
 
 class GamePage extends StatefulWidget {
   @override
@@ -10,6 +10,27 @@ class _GamePageState extends State<GamePage> {
   double entityX = 0.0;
   double entityY = 0.0;
   bool _loopActive = false;
+  int _score = 0;
+  late Timer _timer;
+  double screenWidth = 0.0;
+  double screenHeight = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        _score++;
+      });
+    });
+
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      setState(() {
+        screenWidth = MediaQuery.of(context).size.width;
+        screenHeight = MediaQuery.of(context).size.height;
+      });
+    });
+  }
 
   void _startContinuousMovement(double dx, double dy) {
     if (_loopActive) return;
@@ -17,16 +38,21 @@ class _GamePageState extends State<GamePage> {
     _loopActive = true;
 
     Future.doWhile(() async {
-      
-      setState(() {
-        entityX += dx;
-        entityY += dy;
-      });
+      double newEntityX = entityX + dx;
+      double newEntityY = entityY + dy;
 
-      
-      await Future.delayed(Duration(microseconds: 1));
+      if (newEntityX >= 0 && newEntityX <= screenWidth - 100.0) {
+        entityX = newEntityX;
+      }
 
-      
+      if (newEntityY >= 0 && newEntityY <= screenHeight - 100.0) {
+        entityY = newEntityY;
+      }
+
+      setState(() {});
+
+      await Future.delayed(const Duration(microseconds: 1));
+
       return _loopActive;
     }).then((_) {
       _loopActive = false;
@@ -70,13 +96,11 @@ class _GamePageState extends State<GamePage> {
                         _loopActive = false;
                       },
                       child: ElevatedButton(
-                        onPressed: () {
-                          
-                        },
-                        child: Icon(Icons.arrow_back),
+                        onPressed: () {},
+                        child: const Icon(Icons.arrow_back),
                       ),
                     ),
-                    SizedBox(width: 16.0),
+                    const SizedBox(width: 16.0),
                     // Right Button
                     Listener(
                       onPointerDown: (details) {
@@ -86,10 +110,8 @@ class _GamePageState extends State<GamePage> {
                         _loopActive = false;
                       },
                       child: ElevatedButton(
-                        onPressed: () {
-                          
-                        },
-                        child: Icon(Icons.arrow_forward),
+                        onPressed: () {},
+                        child: const Icon(Icons.arrow_forward),
                       ),
                     ),
                   ],
@@ -109,13 +131,11 @@ class _GamePageState extends State<GamePage> {
                         _loopActive = false;
                       },
                       child: ElevatedButton(
-                        onPressed: () {
-                          
-                        },
-                        child: Icon(Icons.arrow_upward),
+                        onPressed: () {},
+                        child: const Icon(Icons.arrow_upward),
                       ),
                     ),
-                    SizedBox(height: 16.0),
+                    const SizedBox(height: 16.0),
                     // Down Button
                     Listener(
                       onPointerDown: (details) {
@@ -125,13 +145,26 @@ class _GamePageState extends State<GamePage> {
                         _loopActive = false;
                       },
                       child: ElevatedButton(
-                        onPressed: () {
-                          
-                        },
-                        child: Icon(Icons.arrow_downward),
+                        onPressed: () {},
+                        child: const Icon(Icons.arrow_downward),
                       ),
                     ),
                   ],
+                ),
+              ),
+              Positioned(
+                top: 10.0,
+                right: 10.0,
+                child: Container(
+                  padding: EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.7),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: Text(
+                    'Score: $_score',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ),
             ],
@@ -140,4 +173,12 @@ class _GamePageState extends State<GamePage> {
       ),
     );
   }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
 }
+
+

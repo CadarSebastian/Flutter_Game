@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import 'GamePage.dart'; // Import the new game page file
+import 'package:flutter/material.dart' show BuildContext, MaterialApp, StatelessWidget, Widget, runApp;
 import 'HomePage.dart';
 
 void main (){
