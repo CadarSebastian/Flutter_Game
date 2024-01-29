@@ -57,7 +57,7 @@ class _GamePageState extends State<GamePage> {
       if (circle.y > screenHeight) {
         
         circles.remove(circle);
-        print(1);
+       // print(1);
       }
 
       
@@ -149,7 +149,7 @@ class _GamePageState extends State<GamePage> {
                 right: 10.0,
                 child: Text(
                   'Score: $_number',
-                  style: const TextStyle(fontSize: 18.0, color: Colors.white),
+                  style: const TextStyle(fontSize: 30, color: Colors.white),
                 ),
               ),
               Positioned(
