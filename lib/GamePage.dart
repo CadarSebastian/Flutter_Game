@@ -20,7 +20,7 @@ class _GamePageState extends State<GamePage> {
   @override
   void initState() {
     super.initState();
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         _number += 5;
         
@@ -36,7 +36,7 @@ class _GamePageState extends State<GamePage> {
     });
 
     
-    Timer.periodic(Duration(microseconds: 1), (timer) {
+    Timer.periodic(const Duration(microseconds: 1), (timer) {
       moveCircles();
     });
   }
@@ -68,7 +68,7 @@ class _GamePageState extends State<GamePage> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('You Lost!'),
+              title: const Text('You Lost!'),
               content: Text('Your Score: $_number'),
               actions: <Widget>[
                 TextButton(
@@ -78,7 +78,7 @@ class _GamePageState extends State<GamePage> {
                       MaterialPageRoute(builder: (context) => GamePage()),
                     );
                   },
-                  child: Text('Go Again'),
+                  child: const Text('Go Again'),
                 ),
               ],
             );
@@ -147,7 +147,7 @@ class _GamePageState extends State<GamePage> {
                 right: 10.0,
                 child: Text(
                   'Score: $_number',
-                  style: TextStyle(fontSize: 18.0, color: Colors.white),
+                  style: const TextStyle(fontSize: 18.0, color: Colors.white),
                 ),
               ),
               Positioned(
@@ -219,7 +219,7 @@ class CircleWidget extends StatelessWidget {
     return Container(
       width: Circle.radius * 2,
       height: Circle.radius * 2,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         shape: BoxShape.circle,
         color: Colors.black,
       ),
