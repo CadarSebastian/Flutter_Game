@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'dart:math' as Math;
 import 'package:flutter/material.dart';
-import 'common.dart';
+import 'common.dart';  
 
+// Pagina jocului - StatefulWidget
 class GamePage extends StatefulWidget {
   const GamePage({super.key});
 
@@ -10,27 +11,33 @@ class GamePage extends StatefulWidget {
   _GamePageState createState() => _GamePageState();
 }
 
+// Starea paginii jocului
 class _GamePageState extends State<GamePage> {
+  // Variabilele pentru poziția jucătorului, the loop și scor
   double entityX = 400;
   double entityY = 470;
   bool _loopActive = false;
   int _number = 0;
+
+  // Timerul pentru boulders
   late Timer _timer;
 
+  // Lista pt boulders
   List<Circle> circles = [];
 
   @override
   void initState() {
     super.initState();
+
+    // timer pentru boulder generation
     _timer = Timer.periodic(const Duration(milliseconds: 700), (timer) {
       setState(() {
         _number += 5;
-        
-        
         circles.add(Circle());
       });
     });
 
+    // Limitele ecranului
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         screenWidth = MediaQuery.of(context).size.width;
@@ -38,41 +45,39 @@ class _GamePageState extends State<GamePage> {
       });
     });
 
-    
+    // Configurarea mișcării continue a cercurilor (boulders)
     Timer.periodic(const Duration(microseconds: 1), (timer) {
       moveCircles();
     });
   }
 
+  // functie pentu falling boulders
   void moveCircles() {
     for (Circle circle in List.from(circles)) {
       if (!circle.isMoving) {
-       
         circle.isMoving = true;
       }
 
-      
       circle.y += 10.0;
 
-     
       if (circle.y > screenHeight) {
-        
         circles.remove(circle);
-       // print(1);
+        
       }
 
-      
+      // collision check
       if (entityX < circle.x + Circle.radius &&
           entityX + 100.0 > circle.x &&
           entityY < circle.y + Circle.radius &&
           entityY + 100.0 > circle.y) {
-        _timer.cancel(); 
+        _timer.cancel();
+        // You died alert
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: const Text('You Lost!'),
-              content: Text('Your Score: $_number'),
+              title: const Text('Ai pierdut!'),
+              content: Text('Scorul tău: $_number'),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
@@ -81,7 +86,7 @@ class _GamePageState extends State<GamePage> {
                       MaterialPageRoute(builder: (context) => GamePage()),
                     );
                   },
-                  child: const Text('Go Again'),
+                  child: const Text('Încearcă din nou'),
                 ),
               ],
             );
@@ -93,6 +98,7 @@ class _GamePageState extends State<GamePage> {
     setState(() {});
   }
 
+  // functia de movement
   void _startContinuousMovement(double dx) {
     if (_loopActive) return;
 
@@ -119,6 +125,7 @@ class _GamePageState extends State<GamePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        // img de funadl
         decoration: const BoxDecoration(
           image: DecorationImage(
             image: NetworkImage(
@@ -129,6 +136,7 @@ class _GamePageState extends State<GamePage> {
         child: Center(
           child: Stack(
             children: [
+              // jucatoru
               Positioned(
                 left: entityX,
                 top: entityY,
@@ -138,27 +146,28 @@ class _GamePageState extends State<GamePage> {
                   height: 100.0,
                 ),
               ),
-              
+              // generarea boulders
               for (Circle circle in circles)
                 Positioned(
                   left: circle.x,
                   top: circle.y,
                   child: CircleWidget(),
                 ),
+              // Scoru
               Positioned(
                 top: 10.0,
                 right: 10.0,
                 child: Text(
-                  'Score: $_number',
+                  'Scor: $_number',
                   style: const TextStyle(fontSize: 30, color: Colors.white),
                 ),
               ),
+              // Butoanele
               Positioned(
                 bottom: 30.0,
                 left: 18.0,
                 child: Row(
                   children: [
-                    // Left Button
                     Listener(
                       onPointerDown: (details) {
                         _startContinuousMovement(-5.0);
@@ -172,7 +181,6 @@ class _GamePageState extends State<GamePage> {
                       ),
                     ),
                     const SizedBox(width: 1110.0),
-                    
                     Listener(
                       onPointerDown: (details) {
                         _startContinuousMovement(5.0);
@@ -202,6 +210,7 @@ class _GamePageState extends State<GamePage> {
   }
 }
 
+// Blouder hitbox
 class Circle {
   static const double radius = 50.0;
   double x = 0.0;
@@ -209,18 +218,19 @@ class Circle {
   bool isMoving = false;
 
   Circle() {
-    
+    // random boulder pozition
     x = Circle.radius +
         (Math.Random().nextDouble() * (screenWidth - Circle.radius));
     y = -Circle.radius; 
   }
 }
 
+// imaginea de boulder
 class CircleWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Image.network(
-              'https://cdn.polyhaven.com/asset_img/thumbs/rock_boulder_dry.png?format=png',
+      'https://cdn.polyhaven.com/asset_img/thumbs/rock_boulder_dry.png?format=png',
       width: Circle.radius * 2,
       height: Circle.radius * 2,
     );
