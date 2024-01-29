@@ -22,7 +22,7 @@ class _GamePageState extends State<GamePage> {
     super.initState();
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
-        _number++;
+        _number+=5;
         // Create a new circle and add it to the list
         circles.add(Circle());
       });
@@ -42,12 +42,13 @@ class _GamePageState extends State<GamePage> {
   }
 
   void checkCollisions() {
+    
     for (Circle circle in circles) {
       if (entityX < circle.x + Circle.radius &&
           entityX + 100.0 > circle.x &&
           entityY < circle.y + Circle.radius &&
           entityY + 100.0 > circle.y) {
-        // Collision detected, player loses
+       
         _timer.cancel(); // Stop the timer
         showDialog(
           context: context,
@@ -68,7 +69,7 @@ class _GamePageState extends State<GamePage> {
               ],
             );
           },
-        );
+        );break;
       }
     }
   }
@@ -229,8 +230,8 @@ class Circle {
 
   Circle() {
     // Generate random position for the circle
-    x = Circle.radius + (Math.Random().nextDouble() * (900 - 2 * Circle.radius));
-    y = Circle.radius + (Math.Random().nextDouble() * (900 - 2 * Circle.radius));
+    x = Circle.radius + (Math.Random().nextDouble() * (800 - 2 * Circle.radius));
+    y = Circle.radius + (Math.Random().nextDouble() * (500 - 2 * Circle.radius));
   }
 }
 
