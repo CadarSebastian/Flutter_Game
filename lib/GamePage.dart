@@ -11,9 +11,9 @@ class Circle {
   Circle() {
     // Generate random position for the circle
     x = Circle.radius +
-        (Math.Random().nextDouble() * (800 - Circle.radius));
+        (Math.Random().nextDouble() * (800 - 2 * Circle.radius));
     y = Circle.radius +
-        (Math.Random().nextDouble() * (500 - Circle.radius));
+        (Math.Random().nextDouble() * (500 - 2 * Circle.radius));
   }
 }
 
@@ -269,12 +269,18 @@ class _CircleWidgetState extends State<CircleWidget> {
   @override
   void initState() {
     super.initState();
-    // Schedule the explosion after 2.5 seconds
-    Timer(Duration(milliseconds: (2.5 * 1000).toInt()), () {
+    // Schedule the explosion 1 second before
+    Timer(Duration(milliseconds: (2.5 * 1000 - 1000).toInt()), () {
       if (mounted) {
         setState(() {
           exploded = true;
         });
+      }
+    });
+
+    // Schedule the explosion after 2.5 seconds
+    Timer(Duration(milliseconds: (2.5 * 1000).toInt()), () {
+      if (mounted) {
         widget.onExplosion();
       }
     });
@@ -287,7 +293,7 @@ class _CircleWidgetState extends State<CircleWidget> {
       height: Circle.radius * 2,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: exploded ? Colors.transparent : Colors.red,
+        color: exploded ? Colors.red : Colors.black,
       ),
     );
   }
