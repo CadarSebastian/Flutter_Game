@@ -9,7 +9,29 @@ class GamePage extends StatefulWidget {
 class _GamePageState extends State<GamePage> {
   double entityX = 0.0;
   double entityY = 0.0;
-  late Timer continuousMovementTimer; 
+  bool _loopActive = false;
+
+  void _startContinuousMovement(double dx, double dy) {
+    if (_loopActive) return;
+
+    _loopActive = true;
+
+    Future.doWhile(() async {
+      
+      setState(() {
+        entityX += dx;
+        entityY += dy;
+      });
+
+      
+      await Future.delayed(Duration(microseconds: 1));
+
+      
+      return _loopActive;
+    }).then((_) {
+      _loopActive = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,43 +57,37 @@ class _GamePageState extends State<GamePage> {
                 ),
               ),
               Positioned(
-                bottom: 16.0,
-                left: 16.0,
+                bottom: 30.0,
+                left: 18.0,
                 child: Row(
                   children: [
                     // Left Button
-                    GestureDetector(
-                      onLongPressStart: (details) {
-                        startContinuousMovement(-10.0, 0.0);
+                    Listener(
+                      onPointerDown: (details) {
+                        _startContinuousMovement(-5.0, 0.0);
                       },
-                      onLongPressMoveUpdate: (details) {
-                        // To handle movement updates
-                      },
-                      onLongPressEnd: (details) {
-                        stopContinuousMovement();
+                      onPointerUp: (details) {
+                        _loopActive = false;
                       },
                       child: ElevatedButton(
                         onPressed: () {
-                          moveEntity(-10.0, 0.0);
+                          
                         },
                         child: Icon(Icons.arrow_back),
                       ),
                     ),
                     SizedBox(width: 16.0),
                     // Right Button
-                    GestureDetector(
-                      onLongPressStart: (details) {
-                        startContinuousMovement(10.0, 0.0);
+                    Listener(
+                      onPointerDown: (details) {
+                        _startContinuousMovement(5.0, 0.0);
                       },
-                      onLongPressMoveUpdate: (details) {
-                        // To handle movement updates
-                      },
-                      onLongPressEnd: (details) {
-                        stopContinuousMovement();
+                      onPointerUp: (details) {
+                        _loopActive = false;
                       },
                       child: ElevatedButton(
                         onPressed: () {
-                          moveEntity(10.0, 0.0);
+                          
                         },
                         child: Icon(Icons.arrow_forward),
                       ),
@@ -80,43 +96,37 @@ class _GamePageState extends State<GamePage> {
                 ),
               ),
               Positioned(
-                bottom: 72.0,
-                left: 64.0,
+                bottom: 10.0,
+                left: 55.0,
                 child: Column(
                   children: [
                     // Up Button
-                    GestureDetector(
-                      onLongPressStart: (details) {
-                        startContinuousMovement(0.0, -10.0);
+                    Listener(
+                      onPointerDown: (details) {
+                        _startContinuousMovement(0.0, -5.0);
                       },
-                      onLongPressMoveUpdate: (details) {
-                        // To handle movement updates
-                      },
-                      onLongPressEnd: (details) {
-                        stopContinuousMovement();
+                      onPointerUp: (details) {
+                        _loopActive = false;
                       },
                       child: ElevatedButton(
                         onPressed: () {
-                          moveEntity(0.0, -10.0);
+                          
                         },
                         child: Icon(Icons.arrow_upward),
                       ),
                     ),
                     SizedBox(height: 16.0),
                     // Down Button
-                    GestureDetector(
-                      onLongPressStart: (details) {
-                        startContinuousMovement(0.0, 10.0);
+                    Listener(
+                      onPointerDown: (details) {
+                        _startContinuousMovement(0.0, 5.0);
                       },
-                      onLongPressMoveUpdate: (details) {
-                        // To handle movement updates
-                      },
-                      onLongPressEnd: (details) {
-                        stopContinuousMovement();
+                      onPointerUp: (details) {
+                        _loopActive = false;
                       },
                       child: ElevatedButton(
                         onPressed: () {
-                          moveEntity(0.0, 10.0);
+                          
                         },
                         child: Icon(Icons.arrow_downward),
                       ),
@@ -129,24 +139,5 @@ class _GamePageState extends State<GamePage> {
         ),
       ),
     );
-  }
-
-  void moveEntity(double dx, double dy) {
-    setState(() {
-      entityX += dx;
-      entityY += dy;
-    });
-  }
-
-  void startContinuousMovement(double dx, double dy) {
-    // Start continuous movement by using a timer or other mechanism
-    continuousMovementTimer = Timer.periodic(Duration(milliseconds: 10), (Timer timer) {
-      moveEntity(dx, dy);
-    });
-  }
-
-  void stopContinuousMovement() {
-    
-    continuousMovementTimer.cancel();
   }
 }
