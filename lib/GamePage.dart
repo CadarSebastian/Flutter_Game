@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as Math;
 import 'package:flutter/material.dart';
+import 'common.dart';
 
 class GamePage extends StatefulWidget {
   @override
@@ -13,8 +14,7 @@ class _GamePageState extends State<GamePage> {
   bool _loopActive = false;
   int _number = 0;
   late Timer _timer;
-  double screenWidth = 0.0;
-  double screenHeight = 0.0;
+
   List<Circle> circles = [];
 
   @override
@@ -22,7 +22,7 @@ class _GamePageState extends State<GamePage> {
     super.initState();
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
-        _number+=5;
+        _number += 5;
         // Create a new circle and add it to the list
         circles.add(Circle());
       });
@@ -38,17 +38,16 @@ class _GamePageState extends State<GamePage> {
     // Check for collisions every 100 milliseconds
     Timer.periodic(Duration(milliseconds: 100), (timer) {
       checkCollisions();
+      updateCircles(timer.tick);
     });
   }
 
   void checkCollisions() {
-    
     for (Circle circle in circles) {
       if (entityX < circle.x + Circle.radius &&
           entityX + 100.0 > circle.x &&
           entityY < circle.y + Circle.radius &&
           entityY + 100.0 > circle.y) {
-       
         _timer.cancel(); // Stop the timer
         showDialog(
           context: context,
@@ -60,18 +59,24 @@ class _GamePageState extends State<GamePage> {
                 TextButton(
                   onPressed: () {
                     Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => GamePage())
-              );
+                      context,
+                      MaterialPageRoute(builder: (context) => GamePage()),
+                    );
                   },
                   child: Text('Go Again'),
                 ),
               ],
             );
           },
-        );break;
+        );
       }
     }
+  }
+
+  void updateCircles(int tick) {
+    circles.removeWhere((circle) {
+      return tick % (2.5 * 10) == 0;
+    });
   }
 
   void _startContinuousMovement(double dx, double dy) {
@@ -108,7 +113,8 @@ class _GamePageState extends State<GamePage> {
         decoration: const BoxDecoration(
           image: DecorationImage(
             image: NetworkImage(
-                'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJCyMsO83lYVVJwj0iP-DhHsaB6Xs1-NMF0A&usqp=CAU'),
+              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJCyMsO83lYVVJwj0iP-DhHsaB6Xs1-NMF0A&usqp=CAU',
+            ),
             fit: BoxFit.cover,
           ),
         ),
@@ -224,14 +230,16 @@ class _GamePageState extends State<GamePage> {
 }
 
 class Circle {
-  static const double radius = 60.0;
+  static const double radius = 100.0;
   double x = 0.0;
   double y = 0.0;
 
   Circle() {
     // Generate random position for the circle
-    x = Circle.radius + (Math.Random().nextDouble() * (800 - 2 * Circle.radius));
-    y = Circle.radius + (Math.Random().nextDouble() * (500 - 2 * Circle.radius));
+    x = Circle.radius +
+        (Math.Random().nextDouble() * (800 - 2 * Circle.radius));
+    y = Circle.radius +
+        (Math.Random().nextDouble() * (500 - 2 * Circle.radius));
   }
 }
 
