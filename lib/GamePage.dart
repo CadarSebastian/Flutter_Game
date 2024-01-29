@@ -83,7 +83,7 @@ class _GamePageState extends State<GamePage> {
                 ),
               ),
               Positioned(
-                bottom: 30.0,
+                bottom: 39.0,
                 left: 18.0,
                 child: Row(
                   children: [
@@ -100,7 +100,7 @@ class _GamePageState extends State<GamePage> {
                         child: const Icon(Icons.arrow_back),
                       ),
                     ),
-                    const SizedBox(width: 16.0),
+                    const SizedBox(width: 53.0),
                     // Right Button
                     Listener(
                       onPointerDown: (details) {
@@ -119,7 +119,7 @@ class _GamePageState extends State<GamePage> {
               ),
               Positioned(
                 bottom: 10.0,
-                left: 55.0,
+                left: 72.0,
                 child: Column(
                   children: [
                     // Up Button
@@ -135,7 +135,7 @@ class _GamePageState extends State<GamePage> {
                         child: const Icon(Icons.arrow_upward),
                       ),
                     ),
-                    const SizedBox(height: 16.0),
+                    const SizedBox(height: 29.0),
                     // Down Button
                     Listener(
                       onPointerDown: (details) {
