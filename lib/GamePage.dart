@@ -11,9 +11,9 @@ class Circle {
   Circle() {
     // Generate random position for the circle
     x = Circle.radius +
-        (Math.Random().nextDouble() * (800 - 2 * Circle.radius));
+        (Math.Random().nextDouble() * (800 - Circle.radius));
     y = Circle.radius +
-        (Math.Random().nextDouble() * (500 - 2 * Circle.radius));
+        (Math.Random().nextDouble() * (500 - Circle.radius));
   }
 }
 
