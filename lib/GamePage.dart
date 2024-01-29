@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
+import 'dart:math' as Math;
+import 'package:flutter/material.dart';
 
 class GamePage extends StatefulWidget {
   @override
@@ -10,17 +11,20 @@ class _GamePageState extends State<GamePage> {
   double entityX = 0.0;
   double entityY = 0.0;
   bool _loopActive = false;
-  int _score = 0;
+  int _number = 0;
   late Timer _timer;
   double screenWidth = 0.0;
   double screenHeight = 0.0;
+  List<Circle> circles = [];
 
   @override
   void initState() {
     super.initState();
-    _timer = Timer.periodic(Duration(milliseconds: 200), (timer) {
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
-        _score++;
+        _number++;
+        // Create a new circle and add it to the list
+        circles.add(Circle());
       });
     });
 
@@ -30,6 +34,43 @@ class _GamePageState extends State<GamePage> {
         screenHeight = MediaQuery.of(context).size.height;
       });
     });
+
+    // Check for collisions every 100 milliseconds
+    Timer.periodic(Duration(milliseconds: 100), (timer) {
+      checkCollisions();
+    });
+  }
+
+  void checkCollisions() {
+    for (Circle circle in circles) {
+      if (entityX < circle.x + Circle.radius &&
+          entityX + 100.0 > circle.x &&
+          entityY < circle.y + Circle.radius &&
+          entityY + 100.0 > circle.y) {
+        // Collision detected, player loses
+        _timer.cancel(); // Stop the timer
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('You Lost!'),
+              content: Text('Your Score: $_number'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => GamePage())
+              );
+                  },
+                  child: Text('Go Again'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    }
   }
 
   void _startContinuousMovement(double dx, double dy) {
@@ -82,8 +123,23 @@ class _GamePageState extends State<GamePage> {
                   height: 100.0,
                 ),
               ),
+              // Display circles on the ground using CircleWidget
+              for (Circle circle in circles)
+                Positioned(
+                  left: circle.x,
+                  top: circle.y,
+                  child: CircleWidget(),
+                ),
               Positioned(
-                bottom: 39.0,
+                top: 10.0,
+                right: 10.0,
+                child: Text(
+                  'Score: $_number',
+                  style: TextStyle(fontSize: 18.0, color: Colors.white),
+                ),
+              ),
+              Positioned(
+                bottom: 30.0,
                 left: 18.0,
                 child: Row(
                   children: [
@@ -100,7 +156,7 @@ class _GamePageState extends State<GamePage> {
                         child: const Icon(Icons.arrow_back),
                       ),
                     ),
-                    const SizedBox(width: 53.0),
+                    const SizedBox(width: 16.0),
                     // Right Button
                     Listener(
                       onPointerDown: (details) {
@@ -119,7 +175,7 @@ class _GamePageState extends State<GamePage> {
               ),
               Positioned(
                 bottom: 10.0,
-                left: 72.0,
+                left: 55.0,
                 child: Column(
                   children: [
                     // Up Button
@@ -135,7 +191,7 @@ class _GamePageState extends State<GamePage> {
                         child: const Icon(Icons.arrow_upward),
                       ),
                     ),
-                    const SizedBox(height: 29.0),
+                    const SizedBox(height: 16.0),
                     // Down Button
                     Listener(
                       onPointerDown: (details) {
@@ -152,21 +208,6 @@ class _GamePageState extends State<GamePage> {
                   ],
                 ),
               ),
-              Positioned(
-                top: 10.0,
-                right: 10.0,
-                child: Container(
-                  padding: EdgeInsets.all(16.0),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.7),
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: Text(
-                    'Score: $_score',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
             ],
           ),
         ),
@@ -181,4 +222,34 @@ class _GamePageState extends State<GamePage> {
   }
 }
 
+class Circle {
+  static const double radius = 60.0;
+  double x = 0.0;
+  double y = 0.0;
 
+  Circle() {
+    // Generate random position for the circle
+    x = Circle.radius + (Math.Random().nextDouble() * (900 - 2 * Circle.radius));
+    y = Circle.radius + (Math.Random().nextDouble() * (900 - 2 * Circle.radius));
+  }
+}
+
+class CircleWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: Circle.radius * 2,
+      height: Circle.radius * 2,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.red,
+      ),
+    );
+  }
+}
+
+void main() {
+  runApp(MaterialApp(
+    home: GamePage(),
+  ));
+}
