@@ -7,6 +7,7 @@ class Circle {
   static const double radius = 100.0;
   double x = 0.0;
   double y = 0.0;
+  bool isExploded = false;
 
   Circle() {
     // Generate random position for the circle
@@ -16,6 +17,7 @@ class Circle {
         (Math.Random().nextDouble() * (500 - 2 * Circle.radius));
   }
 }
+
 
 class GamePage extends StatefulWidget {
   @override
@@ -58,35 +60,37 @@ class _GamePageState extends State<GamePage> {
   }
 
   void checkCollisions() {
-    for (Circle circle in List.from(circles)) {
-      if (entityX < circle.x + Circle.radius &&
-          entityX + 100.0 > circle.x &&
-          entityY < circle.y + Circle.radius &&
-          entityY + 100.0 > circle.y) {
-        _timer.cancel(); // Stop the timer
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('You Lost!'),
-              content: Text('Your Score: $_number'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => GamePage()),
-                    );
-                  },
-                  child: Text('Go Again'),
-                ),
-              ],
-            );
-          },
-        );
-      }
+  for (Circle circle in List.from(circles)) {
+    if (!circle.isExploded &&
+        entityX < circle.x + Circle.radius &&
+        entityX + 100.0 > circle.x &&
+        entityY < circle.y + Circle.radius &&
+        entityY + 100.0 > circle.y) {
+      _timer.cancel(); // Stop the timer
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('You Lost!'),
+            content: Text('Your Score: $_number'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => GamePage()),
+                  );
+                },
+                child: Text('Go Again'),
+              ),
+            ],
+          );
+        },
+      );
     }
   }
+}
+
 
   void updateCircles(int tick) {
     circles.removeWhere((circle) {
