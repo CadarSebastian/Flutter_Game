@@ -10,7 +10,7 @@ class GamePage extends StatefulWidget {
 
 class _GamePageState extends State<GamePage> {
   double entityX = 400;
-  double entityY = 550;
+  double entityY = 470;
   bool _loopActive = false;
   int _number = 0;
   late Timer _timer;
@@ -23,7 +23,7 @@ class _GamePageState extends State<GamePage> {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
         _number += 5;
-        // Create a new circle and add it to the list
+        
         circles.add(Circle());
       });
     });
@@ -35,7 +35,7 @@ class _GamePageState extends State<GamePage> {
       });
     });
 
-    // Move circles every 100 milliseconds
+    
     Timer.periodic(Duration(microseconds: 1), (timer) {
       moveCircles();
     });
@@ -44,25 +44,26 @@ class _GamePageState extends State<GamePage> {
   void moveCircles() {
     for (Circle circle in List.from(circles)) {
       if (!circle.isMoving) {
-        // Start moving the circle
+       
         circle.isMoving = true;
       }
 
-      // Move the circle down the screen
+      
       circle.y += 10.0;
 
-      // Check if the circle moved out of the screen
+     
       if (circle.y > screenHeight) {
-        // Remove the circle if it moved out of the screen
+        
         circles.remove(circle);
+        print(1);
       }
 
-      // Check for collisions with character
+      
       if (entityX < circle.x + Circle.radius &&
           entityX + 100.0 > circle.x &&
           entityY < circle.y + Circle.radius &&
           entityY + 100.0 > circle.y) {
-        _timer.cancel(); // Stop the timer
+        _timer.cancel(); 
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -118,7 +119,7 @@ class _GamePageState extends State<GamePage> {
         decoration: const BoxDecoration(
           image: DecorationImage(
             image: NetworkImage(
-                'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJCyMsO83lYVVJwj0iP-DhHsaB6Xs1-NMF0A&usqp=CAU'),
+                'https://media.istockphoto.com/id/1333010525/vector/simple-flat-pixel-art-illustration-of-cartoon-outdoor-landscape-background-pixel-arcade.jpg?s=612x612&w=0&k=20&c=uTGqB9fhmjzaNd17EGRHYU04_70K7a3M8ilRoJjDwtY='),
             fit: BoxFit.cover,
           ),
         ),
@@ -134,7 +135,7 @@ class _GamePageState extends State<GamePage> {
                   height: 100.0,
                 ),
               ),
-              // Display circles on the screen
+              
               for (Circle circle in circles)
                 Positioned(
                   left: circle.x,
@@ -168,7 +169,7 @@ class _GamePageState extends State<GamePage> {
                       ),
                     ),
                     const SizedBox(width: 16.0),
-                    // Right Button
+                    
                     Listener(
                       onPointerDown: (details) {
                         _startContinuousMovement(5.0);
@@ -205,10 +206,10 @@ class Circle {
   bool isMoving = false;
 
   Circle() {
-    // Generate random position for the circle
+    
     x = Circle.radius +
         (Math.Random().nextDouble() * (screenWidth - Circle.radius));
-    y = -Circle.radius; // Start above the screen
+    y = -Circle.radius; 
   }
 }
 
