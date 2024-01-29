@@ -3,6 +3,20 @@ import 'dart:math' as Math;
 import 'package:flutter/material.dart';
 import 'common.dart';
 
+class Circle {
+  static const double radius = 100.0;
+  double x = 0.0;
+  double y = 0.0;
+
+  Circle() {
+    // Generate random position for the circle
+    x = Circle.radius +
+        (Math.Random().nextDouble() * (800 - 2 * Circle.radius));
+    y = Circle.radius +
+        (Math.Random().nextDouble() * (500 - 2 * Circle.radius));
+  }
+}
+
 class GamePage extends StatefulWidget {
   @override
   _GamePageState createState() => _GamePageState();
@@ -23,7 +37,6 @@ class _GamePageState extends State<GamePage> {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
         _number += 5;
-        // Create a new circle and add it to the list
         circles.add(Circle());
       });
     });
@@ -37,13 +50,15 @@ class _GamePageState extends State<GamePage> {
 
     // Check for collisions every 100 milliseconds
     Timer.periodic(Duration(milliseconds: 100), (timer) {
-      checkCollisions();
-      updateCircles(timer.tick);
+      if (mounted) {
+        checkCollisions();
+        updateCircles(timer.tick);
+      }
     });
   }
 
   void checkCollisions() {
-    for (Circle circle in circles) {
+    for (Circle circle in List.from(circles)) {
       if (entityX < circle.x + Circle.radius &&
           entityX + 100.0 > circle.x &&
           entityY < circle.y + Circle.radius &&
@@ -96,7 +111,9 @@ class _GamePageState extends State<GamePage> {
         entityY = newEntityY;
       }
 
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
 
       await Future.delayed(const Duration(microseconds: 1));
 
@@ -135,7 +152,15 @@ class _GamePageState extends State<GamePage> {
                 Positioned(
                   left: circle.x,
                   top: circle.y,
-                  child: CircleWidget(),
+                  child: CircleWidget(
+                    onExplosion: () {
+                      if (mounted) {
+                        setState(() {
+                          circles.remove(circle);
+                        });
+                      }
+                    },
+                  ),
                 ),
               Positioned(
                 top: 10.0,
@@ -229,21 +254,32 @@ class _GamePageState extends State<GamePage> {
   }
 }
 
-class Circle {
-  static const double radius = 100.0;
-  double x = 0.0;
-  double y = 0.0;
+class CircleWidget extends StatefulWidget {
+  final VoidCallback onExplosion;
 
-  Circle() {
-    // Generate random position for the circle
-    x = Circle.radius +
-        (Math.Random().nextDouble() * (800 - 2 * Circle.radius));
-    y = Circle.radius +
-        (Math.Random().nextDouble() * (500 - 2 * Circle.radius));
-  }
+  CircleWidget({required this.onExplosion});
+
+  @override
+  _CircleWidgetState createState() => _CircleWidgetState();
 }
 
-class CircleWidget extends StatelessWidget {
+class _CircleWidgetState extends State<CircleWidget> {
+  bool exploded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Schedule the explosion after 2.5 seconds
+    Timer(Duration(milliseconds: (2.5 * 1000).toInt()), () {
+      if (mounted) {
+        setState(() {
+          exploded = true;
+        });
+        widget.onExplosion();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -251,14 +287,8 @@ class CircleWidget extends StatelessWidget {
       height: Circle.radius * 2,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: Colors.red,
+        color: exploded ? Colors.transparent : Colors.red,
       ),
     );
   }
-}
-
-void main() {
-  runApp(MaterialApp(
-    home: GamePage(),
-  ));
 }
