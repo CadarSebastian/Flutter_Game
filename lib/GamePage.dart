@@ -9,7 +9,7 @@ class GamePage extends StatefulWidget {
 }
 
 class _GamePageState extends State<GamePage> {
-  double entityX = 500;
+  double entityX = 400;
   double entityY = 550;
   bool _loopActive = false;
   int _number = 0;
@@ -56,26 +56,49 @@ class _GamePageState extends State<GamePage> {
         // Remove the circle if it moved out of the screen
         circles.remove(circle);
       }
+
+      // Check for collisions with character
+      if (entityX < circle.x + Circle.radius &&
+          entityX + 100.0 > circle.x &&
+          entityY < circle.y + Circle.radius &&
+          entityY + 100.0 > circle.y) {
+        _timer.cancel(); // Stop the timer
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('You Lost!'),
+              content: Text('Your Score: $_number'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => GamePage()),
+                    );
+                  },
+                  child: Text('Go Again'),
+                ),
+              ],
+            );
+          },
+        );
+      }
     }
 
     setState(() {});
   }
 
-  void _startContinuousMovement(double dx, double dy) {
+  void _startContinuousMovement(double dx) {
     if (_loopActive) return;
 
     _loopActive = true;
 
     Future.doWhile(() async {
       double newEntityX = entityX + dx;
-      double newEntityY = entityY + dy;
 
       if (newEntityX >= 0 && newEntityX <= screenWidth - 100.0) {
         entityX = newEntityX;
-      }
-
-      if (newEntityY >= 0 && newEntityY <= screenHeight - 100.0) {
-        entityY = newEntityY;
       }
 
       setState(() {});
@@ -134,7 +157,7 @@ class _GamePageState extends State<GamePage> {
                     // Left Button
                     Listener(
                       onPointerDown: (details) {
-                        _startContinuousMovement(-5.0, 0.0);
+                        _startContinuousMovement(-5.0);
                       },
                       onPointerUp: (details) {
                         _loopActive = false;
@@ -148,7 +171,7 @@ class _GamePageState extends State<GamePage> {
                     // Right Button
                     Listener(
                       onPointerDown: (details) {
-                        _startContinuousMovement(5.0, 0.0);
+                        _startContinuousMovement(5.0);
                       },
                       onPointerUp: (details) {
                         _loopActive = false;
@@ -156,41 +179,6 @@ class _GamePageState extends State<GamePage> {
                       child: ElevatedButton(
                         onPressed: () {},
                         child: const Icon(Icons.arrow_forward),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Positioned(
-                bottom: 10.0,
-                left: 55.0,
-                child: Column(
-                  children: [
-                    // Up Button
-                    Listener(
-                      onPointerDown: (details) {
-                        _startContinuousMovement(0.0, -5.0);
-                      },
-                      onPointerUp: (details) {
-                        _loopActive = false;
-                      },
-                      child: ElevatedButton(
-                        onPressed: () {},
-                        child: const Icon(Icons.arrow_upward),
-                      ),
-                    ),
-                    const SizedBox(height: 16.0),
-                    // Down Button
-                    Listener(
-                      onPointerDown: (details) {
-                        _startContinuousMovement(0.0, 5.0);
-                      },
-                      onPointerUp: (details) {
-                        _loopActive = false;
-                      },
-                      child: ElevatedButton(
-                        onPressed: () {},
-                        child: const Icon(Icons.arrow_downward),
                       ),
                     ),
                   ],
@@ -219,7 +207,7 @@ class Circle {
   Circle() {
     // Generate random position for the circle
     x = Circle.radius +
-        (Math.Random().nextDouble() * (800 - Circle.radius));
+        (Math.Random().nextDouble() * (screenWidth - Circle.radius));
     y = -Circle.radius; // Start above the screen
   }
 }
