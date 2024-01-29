@@ -216,13 +216,10 @@ class Circle {
 class CircleWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Image.asset(
+      'assets/boulder.png',
       width: Circle.radius * 2,
       height: Circle.radius * 2,
-      decoration: const BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.black,
-      ),
     );
   }
 }

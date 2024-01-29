@@ -58,7 +58,7 @@ dev_dependencies:
 flutter:
   assets:
     - assets/caracter.png
-    - assets/1847.jpg
+    - assets/boulder.png
     
 
   

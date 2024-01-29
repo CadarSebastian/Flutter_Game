@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'GamePage.dart'; // Import the new game page file
+import 'GamePage.dart'; 
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -44,8 +44,8 @@ class _HomePageState extends State<HomePage> {
             child: const Padding(
               padding: EdgeInsets.all(20.0),
               child: Icon(
-      Icons.play_arrow, // Replace this with the desired icon
-      size: 40.0, // Adjust the size of the icon as needed
+      Icons.play_arrow, 
+      size: 40.0, 
                 
               ),
             ),
