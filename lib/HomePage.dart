@@ -12,12 +12,12 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-
+//animatia pt boulder spin
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: Duration(seconds: 10), // Adjust the duration as needed
+      duration: Duration(seconds: 10), 
       vsync: this,
     )..repeat();
   }
