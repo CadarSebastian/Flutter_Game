@@ -3,30 +3,14 @@ import 'dart:math' as Math;
 import 'package:flutter/material.dart';
 import 'common.dart';
 
-class Circle {
-  static const double radius = 100.0;
-  double x = 0.0;
-  double y = 0.0;
-  bool isExploded = false;
-
-  Circle() {
-    // Generate random position for the circle
-    x = Circle.radius +
-        (Math.Random().nextDouble() * (800 - 2 * Circle.radius));
-    y = Circle.radius +
-        (Math.Random().nextDouble() * (500 - 2 * Circle.radius));
-  }
-}
-
-
 class GamePage extends StatefulWidget {
   @override
   _GamePageState createState() => _GamePageState();
 }
 
 class _GamePageState extends State<GamePage> {
-  double entityX = 0.0;
-  double entityY = 0.0;
+  double entityX = 500;
+  double entityY = 550;
   bool _loopActive = false;
   int _number = 0;
   late Timer _timer;
@@ -39,6 +23,7 @@ class _GamePageState extends State<GamePage> {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
         _number += 5;
+        // Create a new circle and add it to the list
         circles.add(Circle());
       });
     });
@@ -50,52 +35,30 @@ class _GamePageState extends State<GamePage> {
       });
     });
 
-    // Check for collisions every 100 milliseconds
-    Timer.periodic(Duration(milliseconds: 100), (timer) {
-      if (mounted) {
-        checkCollisions();
-        updateCircles(timer.tick);
+    // Move circles every 100 milliseconds
+    Timer.periodic(Duration(microseconds: 1), (timer) {
+      moveCircles();
+    });
+  }
+
+  void moveCircles() {
+    for (Circle circle in List.from(circles)) {
+      if (!circle.isMoving) {
+        // Start moving the circle
+        circle.isMoving = true;
       }
-    });
-  }
 
-  void checkCollisions() {
-  for (Circle circle in List.from(circles)) {
-    if (!circle.isExploded &&
-        entityX < circle.x + Circle.radius &&
-        entityX + 100.0 > circle.x &&
-        entityY < circle.y + Circle.radius &&
-        entityY + 100.0 > circle.y) {
-      _timer.cancel(); // Stop the timer
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('You Lost!'),
-            content: Text('Your Score: $_number'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => GamePage()),
-                  );
-                },
-                child: Text('Go Again'),
-              ),
-            ],
-          );
-        },
-      );
+      // Move the circle down the screen
+      circle.y += 10.0;
+
+      // Check if the circle moved out of the screen
+      if (circle.y > screenHeight) {
+        // Remove the circle if it moved out of the screen
+        circles.remove(circle);
+      }
     }
-  }
-}
 
-
-  void updateCircles(int tick) {
-    circles.removeWhere((circle) {
-      return tick % (2.5 * 10) == 0;
-    });
+    setState(() {});
   }
 
   void _startContinuousMovement(double dx, double dy) {
@@ -115,9 +78,7 @@ class _GamePageState extends State<GamePage> {
         entityY = newEntityY;
       }
 
-      if (mounted) {
-        setState(() {});
-      }
+      setState(() {});
 
       await Future.delayed(const Duration(microseconds: 1));
 
@@ -134,8 +95,7 @@ class _GamePageState extends State<GamePage> {
         decoration: const BoxDecoration(
           image: DecorationImage(
             image: NetworkImage(
-              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJCyMsO83lYVVJwj0iP-DhHsaB6Xs1-NMF0A&usqp=CAU',
-            ),
+                'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJCyMsO83lYVVJwj0iP-DhHsaB6Xs1-NMF0A&usqp=CAU'),
             fit: BoxFit.cover,
           ),
         ),
@@ -151,20 +111,12 @@ class _GamePageState extends State<GamePage> {
                   height: 100.0,
                 ),
               ),
-              // Display circles on the ground using CircleWidget
+              // Display circles on the screen
               for (Circle circle in circles)
                 Positioned(
                   left: circle.x,
                   top: circle.y,
-                  child: CircleWidget(
-                    onExplosion: () {
-                      if (mounted) {
-                        setState(() {
-                          circles.remove(circle);
-                        });
-                      }
-                    },
-                  ),
+                  child: CircleWidget(),
                 ),
               Positioned(
                 top: 10.0,
@@ -258,38 +210,21 @@ class _GamePageState extends State<GamePage> {
   }
 }
 
-class CircleWidget extends StatefulWidget {
-  final VoidCallback onExplosion;
+class Circle {
+  static const double radius = 50.0;
+  double x = 0.0;
+  double y = 0.0;
+  bool isMoving = false;
 
-  CircleWidget({required this.onExplosion});
-
-  @override
-  _CircleWidgetState createState() => _CircleWidgetState();
+  Circle() {
+    // Generate random position for the circle
+    x = Circle.radius +
+        (Math.Random().nextDouble() * (800 - Circle.radius));
+    y = -Circle.radius; // Start above the screen
+  }
 }
 
-class _CircleWidgetState extends State<CircleWidget> {
-  bool exploded = false;
-
-  @override
-  void initState() {
-    super.initState();
-    // Schedule the explosion 1 second before
-    Timer(Duration(milliseconds: (2.5 * 1000 - 1000).toInt()), () {
-      if (mounted) {
-        setState(() {
-          exploded = true;
-        });
-      }
-    });
-
-    // Schedule the explosion after 2.5 seconds
-    Timer(Duration(milliseconds: (2.5 * 1000).toInt()), () {
-      if (mounted) {
-        widget.onExplosion();
-      }
-    });
-  }
-
+class CircleWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -297,7 +232,7 @@ class _CircleWidgetState extends State<CircleWidget> {
       height: Circle.radius * 2,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: exploded ? Colors.red : Colors.black,
+        color: Colors.black,
       ),
     );
   }
