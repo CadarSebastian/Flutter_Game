@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'common.dart';
 
 class GamePage extends StatefulWidget {
+  const GamePage({super.key});
+
   @override
   _GamePageState createState() => _GamePageState();
 }
@@ -216,8 +218,8 @@ class Circle {
 class CircleWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Image.asset(
-      'assets/boulder.png',
+    return Image.network(
+              'https://cdn.polyhaven.com/asset_img/thumbs/rock_boulder_dry.png?format=png',
       width: Circle.radius * 2,
       height: Circle.radius * 2,
     );
