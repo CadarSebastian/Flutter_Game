@@ -3,7 +3,7 @@ import 'dart:math' as Math;
 import 'package:flutter/material.dart';
 import 'common.dart';  
 
-// Pagina jocului - StatefulWidget
+/// Pagina jocului - StatefulWidget
 class GamePage extends StatefulWidget {
   const GamePage({super.key});
 
@@ -11,25 +11,25 @@ class GamePage extends StatefulWidget {
   _GamePageState createState() => _GamePageState();
 }
 
-// Starea paginii jocului
+/// Starea paginii jocului
 class _GamePageState extends State<GamePage> {
-  // Variabilele pentru poziția jucătorului, the loop și scor
+  /// Variabilele pentru poziția jucătorului, the loop și scor
   double entityX = 400;
   double entityY = 470;
   bool _loopActive = false;
   int _number = 0;
 
-  // Timerul pentru boulders
+  /// Timerul pentru boulders
   late Timer _timer;
 
-  // Lista pt boulders
+  /// Lista pt boulders
   List<Circle> circles = [];
 
   @override
   void initState() {
     super.initState();
 
-    // timer pentru boulder generation
+    /// timer pentru boulder generation
     _timer = Timer.periodic(const Duration(milliseconds: 700), (timer) {
       setState(() {
         _number += 5;
@@ -37,7 +37,7 @@ class _GamePageState extends State<GamePage> {
       });
     });
 
-    // Limitele ecranului
+    /// Limitele ecranului
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         screenWidth = MediaQuery.of(context).size.width;
@@ -45,13 +45,13 @@ class _GamePageState extends State<GamePage> {
       });
     });
 
-    // Configurarea mișcării continue a cercurilor (boulders)
+    /// boulder se misca every ... microsecnds
     Timer.periodic(const Duration(microseconds: 1), (timer) {
       moveCircles();
     });
   }
 
-  // functie pentu falling boulders
+  /// functie pentu falling boulders
   void moveCircles() {
     for (Circle circle in List.from(circles)) {
       if (!circle.isMoving) {
@@ -62,16 +62,17 @@ class _GamePageState extends State<GamePage> {
 
       if (circle.y > screenHeight) {
         circles.remove(circle);
+        /// print(1);
         
       }
 
-      // collision check
+      /// collision check
       if (entityX < circle.x + Circle.radius &&
           entityX + 100.0 > circle.x &&
           entityY < circle.y + Circle.radius &&
           entityY + 100.0 > circle.y) {
         _timer.cancel();
-        // You died alert
+        /// You died alert
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -98,7 +99,7 @@ class _GamePageState extends State<GamePage> {
     setState(() {});
   }
 
-  // functia de movement
+  /// functia de movement
   void _startContinuousMovement(double dx) {
     if (_loopActive) return;
 
@@ -106,7 +107,7 @@ class _GamePageState extends State<GamePage> {
 
     Future.doWhile(() async {
       double newEntityX = entityX + dx;
-
+/// verifica daca iese afara din screen
       if (newEntityX >= 0 && newEntityX <= screenWidth - 100.0) {
         entityX = newEntityX;
       }
@@ -136,7 +137,7 @@ class _GamePageState extends State<GamePage> {
         child: Center(
           child: Stack(
             children: [
-              // jucatoru
+              /// jucatoru
               Positioned(
                 left: entityX,
                 top: entityY,
@@ -146,14 +147,14 @@ class _GamePageState extends State<GamePage> {
                   height: 100.0,
                 ),
               ),
-              // generarea boulders
+              /// generarea boulders
               for (Circle circle in circles)
                 Positioned(
                   left: circle.x,
                   top: circle.y,
                   child: CircleWidget(),
                 ),
-              // Scoru
+              /// Scoru
               Positioned(
                 top: 10.0,
                 right: 10.0,
@@ -162,7 +163,7 @@ class _GamePageState extends State<GamePage> {
                   style: const TextStyle(fontSize: 30, color: Colors.white),
                 ),
               ),
-              // Butoanele
+              /// Butoanele
               Positioned(
                 bottom: 30.0,
                 left: 18.0,
@@ -210,7 +211,7 @@ class _GamePageState extends State<GamePage> {
   }
 }
 
-// Blouder hitbox
+/// Blouder hitbox
 class Circle {
   static const double radius = 50.0;
   double x = 0.0;
@@ -218,14 +219,14 @@ class Circle {
   bool isMoving = false;
 
   Circle() {
-    // random boulder pozition
+    /// random boulder pozition
     x = Circle.radius +
         (Math.Random().nextDouble() * (screenWidth - Circle.radius));
     y = -Circle.radius; 
   }
 }
 
-// imaginea de boulder
+/// imaginea de boulder
 class CircleWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
